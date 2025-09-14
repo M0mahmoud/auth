@@ -1,36 +1,152 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Complete Authentication System with Better Auth
+
+This is a comprehensive authentication system built with Next.js and Better Auth, featuring all essential auth pages and functionality.
+
+## Features
+
+### 🔐 Authentication Pages
+
+- **Sign In** (`/auth/signin`) - Email/password and social login (Google, GitHub)
+- **Sign Up** (`/auth/signup`) - User registration with email/password and social login
+- **Forgot Password** (`/auth/forgot-password`) - Password reset request
+- **Reset Password** (`/auth/reset-password`) - Password reset with token validation
+
+### 👤 Profile Management (`/profile`)
+
+- **Profile Information** - View and update user name and email
+- **Password Change** - Secure password update with current password verification
+- **Session Management** - View active sessions and revoke individual sessions
+- **Sign Out** - Sign out from current session or all devices
+
+### 🛡️ Security Features
+
+- Protected routes with middleware
+- Session management and validation
+- Password strength requirements
+- Secure password reset flow
+- Social authentication (Google, GitHub)
+
+## Tech Stack
+
+- **Next.js 15** - React framework with App Router
+- **Better Auth** - Modern authentication library
+- **Prisma** - Database ORM with SQLite
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Beautiful icons
 
 ## Getting Started
 
-First, run the development server:
+1. **Install dependencies:**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+2. **Set up environment variables:**
+   Create a `.env.local` file with:
+
+   ```env
+   # Database
+   DATABASE_URL="file:./dev.db"
+
+   # Social Auth (optional)
+   GITHUB_CLIENT_ID="your_github_client_id"
+   GITHUB_CLIENT_SECRET="your_github_client_secret"
+   GOOGLE_CLIENT_ID="your_google_client_id"
+   GOOGLE_CLIENT_SECRET="your_google_client_secret"
+   ```
+
+3. **Set up the database:**
+
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+4. **Run the development server:**
+
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   ```
+
+5. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Project Structure
+
+```
+├── app/
+│   ├── api/auth/[...all]/route.ts    # Better Auth API handler
+│   ├── auth/
+│   │   ├── signin/page.tsx           # Sign in page
+│   │   ├── signup/page.tsx           # Sign up page
+│   │   ├── forgot-password/page.tsx   # Forgot password page
+│   │   └── reset-password/page.tsx    # Reset password page
+│   ├── profile/page.tsx              # User profile page
+│   ├── page.tsx                      # Home page
+│   └── layout.tsx                    # Root layout with navigation
+├── components/
+│   ├── Navigation.tsx                 # Main navigation component
+│   └── Logout.tsx                    # Logout component
+├── lib/
+│   ├── auth.ts                       # Better Auth configuration
+│   ├── auth-client.ts                # Client-side auth instance
+│   └── prisma.ts                     # Prisma client
+├── middleware.ts                     # Route protection middleware
+└── prisma/
+    └── schema.prisma                 # Database schema
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Authentication Flow
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Registration**: Users can sign up with email/password or social providers
+2. **Login**: Users can sign in with their credentials or social providers
+3. **Password Reset**: Users can request password reset via email
+4. **Profile Management**: Authenticated users can update their profile and manage sessions
+5. **Session Management**: Users can view and revoke active sessions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Endpoints
 
-## Learn More
+Better Auth automatically provides these endpoints:
 
-To learn more about Next.js, take a look at the following resources:
+- `POST /api/auth/sign-up` - User registration
+- `POST /api/auth/sign-in` - User login
+- `POST /api/auth/sign-out` - User logout
+- `POST /api/auth/forget-password` - Password reset request
+- `POST /api/auth/reset-password` - Password reset
+- `GET /api/auth/session` - Get current session
+- `POST /api/auth/update-user` - Update user profile
+- `POST /api/auth/change-password` - Change password
+- `GET /api/auth/sessions` - Get user sessions
+- `POST /api/auth/revoke-session` - Revoke specific session
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security Considerations
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- All password operations are handled securely by Better Auth
+- Sessions are validated on each request
+- Protected routes use middleware for authentication checks
+- Password reset tokens are time-limited and single-use
+- Social authentication follows OAuth 2.0 standards
 
-## Deploy on Vercel
+## Customization
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+You can customize the authentication system by:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Modifying the Better Auth configuration in `lib/auth.ts`
+- Updating the UI components in the `app/auth/` directory
+- Adding additional social providers
+- Customizing the profile page functionality
+- Adding email verification if needed
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).

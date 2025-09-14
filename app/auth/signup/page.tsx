@@ -15,6 +15,7 @@ type Errors = Partial<Record<keyof FormData, string>>;
 
 export default function SignUp() {
   const [isPending, setIsPending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -72,11 +73,13 @@ export default function SignUp() {
         },
         onSuccess: (data) => {
           setIsPending(false);
+          setEmailSent(true);
           console.log("User signed up:", data);
         },
         onError: (error) => {
           setIsPending(false);
-          console.error("Sign up error:", error);
+          console.log("Sign up error:", error);
+          setErrors({ email: error.error.message || "Email already exists" });
         },
       }
     );
@@ -87,8 +90,57 @@ export default function SignUp() {
       ? new URLSearchParams(window.location.search).get("redirect_url")
       : null;
 
+  if (emailSent) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-background p-4 text-foreground">
+        <div className="w-full max-w-md bg-background border border-foreground/20 rounded-lg shadow-sm">
+          <div className="p-6 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-semibold mb-2">Check Your Email</h2>
+            <p className="text-foreground/70 mb-4">
+              We&apos;ve sent a verification link to{" "}
+              <strong>{formData.email}</strong>
+            </p>
+            <p className="text-sm text-foreground/60 mb-6">
+              Click the link in the email to verify your account and complete
+              the signup process.
+            </p>
+            <button
+              onClick={() => {
+                setEmailSent(false);
+                setFormData({
+                  name: "",
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
+                });
+              }}
+              className="text-blue-600 hover:text-blue-500 text-sm underline"
+            >
+              Sign up with a different email
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4 text-foreground">
+    <div className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-background p-4 text-foreground">
       <div className="w-full max-w-md bg-background border border-foreground/20 rounded-lg shadow-sm">
         {/* Header */}
         <div className="p-6 pb-4">

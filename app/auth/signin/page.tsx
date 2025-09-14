@@ -20,6 +20,7 @@ export default function Login() {
   const [errors, setErrors] = useState<Errors>({});
   const [isPending, setIsPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState<string>("");
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -58,6 +59,7 @@ export default function Login() {
       {
         email: formData.email,
         password: formData.password,
+        callbackURL: "/profile",
       },
       {
         onRequest: () => setIsPending(true),
@@ -68,7 +70,19 @@ export default function Login() {
         onError: (error) => {
           setIsPending(false);
           console.error("Login error:", error);
-          setErrors({ password: "Invalid email or password" });
+
+          // Handle email verification error
+          if (error.error.status === 403) {
+            setVerificationMessage(
+              "Please verify your email address before signing in. Check your inbox for a verification link."
+            );
+            setErrors({});
+          } else {
+            setErrors({
+              password: error.error.message || "Invalid email or password",
+            });
+            setVerificationMessage("");
+          }
         },
       }
     );
@@ -97,7 +111,7 @@ export default function Login() {
     "w-full px-3 py-2 border border-foreground/20 rounded-md bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50";
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4 text-foreground">
+    <div className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-background p-4 text-foreground">
       <div className="w-full max-w-md bg-background border border-foreground/20 rounded-lg shadow-sm">
         {/* Header */}
         <div className="p-6 pb-4">
@@ -109,6 +123,54 @@ export default function Login() {
 
         {/* Content */}
         <div className="px-6 pb-6 space-y-4">
+          {/* Email Verification Message */}
+          {verificationMessage && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-yellow-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-800">
+                    {verificationMessage}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await authClient.sendVerificationEmail({
+                          email: formData.email,
+                          callbackURL: "/profile",
+                        });
+                        setVerificationMessage(
+                          "Verification email sent! Please check your inbox."
+                        );
+                      } catch (error) {
+                        console.error(
+                          "Error sending verification email:",
+                          error
+                        );
+                      }
+                    }}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-500 underline"
+                  >
+                    Resend verification email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
@@ -131,9 +193,17 @@ export default function Login() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm mb-1">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label htmlFor="password" className="block text-sm">
+                  Password
+                </label>
+                <a
+                  href="/auth/forgot-password"
+                  className="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-200"
+                >
+                  Forgot password?
+                </a>
+              </div>
               <div className="relative">
                 <input
                   id="password"
