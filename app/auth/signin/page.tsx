@@ -282,8 +282,8 @@ export default function Login() {
               setIsPending(true);
               handleSocialLogin("github");
             }}
-            disabled={isPending}
-            aria-disabled={isPending}
+            disabled={true}
+            aria-disabled={true}
             className="w-full bg-background border border-foreground/20 hover:bg-foreground/5 text-foreground font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center"
           >
             <Image
