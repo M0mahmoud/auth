@@ -2,10 +2,7 @@
   "functions": {
     "app/**/*.{js,ts}": {
       "maxDuration": 30,
-      "includeFiles": [
-        "node_modules/.prisma/client/**",
-        "node_modules/@prisma/client/**"
-      ]
+      "includeFiles": "node_modules/{.prisma/client,@prisma/client}/**"
     }
   },
   "build": {
